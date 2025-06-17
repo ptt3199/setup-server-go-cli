@@ -35,14 +35,29 @@ func installAccessories() {
 		return
 	}
 
-	choiceInt, err := strconv.Atoi(choice)
-	if err != nil {
-		fmt.Println("Invalid choice")
+	// Handle multiple numbers separated by spaces
+	choices := strings.Fields(choice)
+	var selectedAccessories []string
+
+	for _, choiceStr := range choices {
+		choiceInt, err := strconv.Atoi(choiceStr)
+		if err != nil || choiceInt < 1 || choiceInt > len(accessories) {
+			fmt.Printf("Invalid choice: %s\n", choiceStr)
+			continue
+		}
+		selectedAccessories = append(selectedAccessories, accessories[choiceInt-1])
+	}
+
+	if len(selectedAccessories) == 0 {
+		fmt.Println("No valid accessories selected")
 		return
 	}
 
-	accessory := accessories[choiceInt-1]
-	runCommand(fmt.Sprintf("sudo apt-get install -y %s", accessory))
+	// Install all selected accessories
+	for _, accessory := range selectedAccessories {
+		fmt.Printf("Installing %s...\n", accessory)
+		runCommand(fmt.Sprintf("sudo apt-get install -y %s", accessory))
+	}
 
 	fmt.Println("Accessories installed successfully")
 }
