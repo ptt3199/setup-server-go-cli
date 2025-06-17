@@ -39,27 +39,32 @@ func Execute() {
 }
 
 func showInteractiveMenu() {
-	fmt.Println("🚀 Welcome to Server Setup CLI!")
-	fmt.Println("Choose an option:")
-	fmt.Println("1. Install accessories")
-	fmt.Println("2. Install Docker")
-	fmt.Println("3. Exit")
-	fmt.Print("Enter your choice (1-3): ")
+	for {
+		fmt.Println("\n🚀 Server Setup CLI")
+		fmt.Println("Choose an option:")
+		fmt.Println("1. Install accessories")
+		fmt.Println("2. Install Docker")
+		fmt.Println("3. Exit")
+		fmt.Print("Enter your choice (1-3): ")
 
-	reader := bufio.NewReader(os.Stdin)
-	choice, _ := reader.ReadString('\n')
-	choice = strings.TrimSpace(choice)
+		reader := bufio.NewReader(os.Stdin)
+		choice, _ := reader.ReadString('\n')
+		choice = strings.TrimSpace(choice)
 
-	switch choice {
-	case "1":
-		installAccessories()
-	case "2":
-		installDocker()
-	case "3":
-		fmt.Println("👋 Goodbye!")
-		return
-	default:
-		fmt.Println("❌ Invalid choice. Please try again.")
-		showInteractiveMenu()
+		switch choice {
+		case "1":
+			installAccessories()
+			fmt.Println("\n✅ Press Enter to return to main menu...")
+			reader.ReadString('\n')
+		case "2":
+			installDocker()
+			fmt.Println("\n✅ Press Enter to return to main menu...")
+			reader.ReadString('\n')
+		case "3":
+			fmt.Println("👋 Goodbye!")
+			return
+		default:
+			fmt.Println("❌ Invalid choice. Please try again.")
+		}
 	}
 }
