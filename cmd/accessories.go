@@ -3,7 +3,9 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -24,8 +26,10 @@ func installAccessories() {
 	}
 
 	fmt.Print("Enter the number of the accessory to install (e.g. 1, 2, 3, etc.) or 'all' to install all accessories: ")
-	var choice string
-	fmt.Scanln(&choice)
+
+	// Use bufio to read the entire line including spaces
+	reader := bufio.NewReader(os.Stdin)
+	choice, _ := reader.ReadString('\n')
 	choice = strings.TrimSpace(choice)
 
 	if choice == "all" {
