@@ -126,14 +126,3 @@ nfpms:
       - deb
       - rpm
     bindir: /usr/local/bin
-
-brews:
-  - name: setup-server-cli
-    repository:
-      owner: ptt3199
-      name: homebrew-tap
-    homepage: https://github.com/ptt3199/setup-server-go-cli
-    description: Interactive CLI tool for server setup with essential tools
-    license: MIT
-    install: |
-      bin.install "setup-server-cli"
