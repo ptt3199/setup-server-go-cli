@@ -1,0 +1,139 @@
+# GoReleaser configuration for Setup Server CLI
+# Documentation: https://goreleaser.com
+
+version: 2
+
+project_name: setup-server-cli
+
+before:
+  hooks:
+    - go mod tidy
+    - go mod download
+
+builds:
+  - id: setup-server-cli
+    binary: setup-server-cli
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+
+archives:
+  - id: default
+    builds:
+      - setup-server-cli
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    files:
+      - README.md
+      - LICENSE*
+    wrap_in_directory: true
+
+checksum:
+  name_template: 'checksums.txt'
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - '^build:'
+      - '^style:'
+      - '^refactor:'
+      - '^chore:'
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\(.+\))??!?:.+$'
+      order: 0
+    - title: 'Bug fixes'
+      regexp: '^.*?fix(\(.+\))??!?:.+$'
+      order: 1
+    - title: 'Performance improvements'
+      regexp: '^.*?perf(\(.+\))??!?:.+$'
+      order: 2
+    - title: Others
+      order: 999
+
+release:
+  github:
+    owner: ptt3199
+    name: setup-server-go-cli
+  name_template: "Setup Server CLI v{{.Version}}"
+  header: |
+    ## Setup Server CLI {{.Version}}
+    
+    Interactive command-line tool for setting up servers with essential tools.
+    
+    ### Quick Start
+    ```bash
+    # Download for your platform
+    curl -L https://github.com/ptt3199/setup-server-go-cli/releases/download/v{{.Version}}/setup-server-cli_Linux_x86_64.tar.gz | tar xz
+    chmod +x setup-server-cli
+    ./setup-server-cli
+    ```
+    
+    ### What's New
+  footer: |
+    ### Installation Options
+    
+    **Linux (x86_64):**
+    ```bash
+    wget https://github.com/ptt3199/setup-server-go-cli/releases/download/v{{.Version}}/setup-server-cli_Linux_x86_64.tar.gz
+    tar -xzf setup-server-cli_Linux_x86_64.tar.gz
+    chmod +x setup-server-cli
+    ./setup-server-cli
+    ```
+    
+    **macOS (Apple Silicon):**
+    ```bash
+    wget https://github.com/ptt3199/setup-server-go-cli/releases/download/v{{.Version}}/setup-server-cli_Darwin_arm64.tar.gz
+    tar -xzf setup-server-cli_Darwin_arm64.tar.gz
+    chmod +x setup-server-cli
+    ./setup-server-cli
+    ```
+    
+    ---
+    Full changelog: https://github.com/ptt3199/setup-server-go-cli/compare/{{.PreviousTag}}...{{.Tag}}
+
+nfpms:
+  - id: packages
+    builds:
+      - setup-server-cli
+    vendor: ptt3199
+    homepage: https://github.com/ptt3199/setup-server-go-cli
+    maintainer: ptt3199
+    description: Interactive CLI tool for server setup with essential tools
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/local/bin
+
+brews:
+  - name: setup-server-cli
+    repository:
+      owner: ptt3199
+      name: homebrew-tap
+    homepage: https://github.com/ptt3199/setup-server-go-cli
+    description: Interactive CLI tool for server setup with essential tools
+    license: MIT
+    install: |
+      bin.install "setup-server-cli"

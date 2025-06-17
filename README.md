@@ -32,8 +32,29 @@ An interactive command-line tool to setup your server from scratch with essentia
 
 ## 🚀 Quick Start
 
-### Build the Binary
+### Download Pre-built Binary
 
+**Linux (x86_64):**
+```bash
+wget https://github.com/ptt3199/setup-server-go-cli/releases/latest/download/setup-server-cli_Linux_x86_64.tar.gz
+tar -xzf setup-server-cli_Linux_x86_64.tar.gz
+cd setup-server-cli_Linux_x86_64
+chmod +x setup-server-cli
+./setup-server-cli
+```
+
+**macOS (Apple Silicon):**
+```bash
+wget https://github.com/ptt3199/setup-server-go-cli/releases/latest/download/setup-server-cli_Darwin_arm64.tar.gz
+tar -xzf setup-server-cli_Darwin_arm64.tar.gz
+cd setup-server-cli_Darwin_arm64
+chmod +x setup-server-cli
+./setup-server-cli
+```
+
+### Build from Source
+
+**Development builds:**
 ```bash
 # Build for both Linux and macOS
 ./build-cli.sh
@@ -42,6 +63,19 @@ An interactive command-line tool to setup your server from scratch with essentia
 This creates two binaries:
 - `setup-server-cli-linux` - For Linux servers (x86_64)
 - `setup-server-cli-mac` - For macOS (ARM64/Silicon)
+
+**Release builds with GoReleaser:**
+```bash
+# Install GoReleaser
+go install github.com/goreleaser/goreleaser@latest
+
+# Create snapshot release (no git tag needed)
+./build-cli.sh release snapshot
+
+# Create tagged release (requires git tag)
+git tag v1.0.0
+./build-cli.sh release
+```
 
 ### Run Interactively
 
@@ -101,21 +135,25 @@ Accessories installed successfully
 ### Prerequisites
 - Go 1.24.3 or higher
 - Linux/Ubuntu target system for deployment
+- [GoReleaser](https://goreleaser.com/) (for releases)
 
 ### Project Structure
 ```
 setup-server/
-├── main.go           # Entry point
-├── go.mod           # Go module definition
-├── build-cli.sh     # Cross-compilation build script
+├── main.go             # Entry point
+├── go.mod              # Go module definition
+├── .goreleaser.yaml    # GoReleaser configuration
+├── build-cli.sh        # Build script (dev + release)
+├── .env                # Environment variables (GITHUB_TOKEN)
 └── cmd/
-    ├── root.go      # Main CLI and interactive menu
-    ├── accessories.go # System tools installation
-    └── docker.go    # Docker installation
+    ├── root.go         # Main CLI and interactive menu
+    ├── accessories.go  # System tools installation
+    └── docker.go       # Docker installation
 ```
 
 ### Building from Source
 
+**Development builds:**
 ```bash
 # Install dependencies
 go mod tidy
@@ -125,7 +163,52 @@ go build -o setup-server-cli .
 
 # Cross-compile for Linux
 GOOS=linux GOARCH=amd64 go build -o setup-server-cli-linux .
+
+# Use build script (recommended)
+./build-cli.sh
 ```
+
+**Release builds:**
+```bash
+# Setup GitHub token in .env file
+echo "GITHUB_TOKEN=your_github_token" >> .env
+
+# Install GoReleaser
+go install github.com/goreleaser/goreleaser@latest
+
+# Test release build (no publishing)
+./build-cli.sh release snapshot
+
+# Create actual release (requires git tag)
+git tag v1.0.0
+git push origin v1.0.0
+./build-cli.sh release
+```
+
+## 📦 Release Management
+
+### GoReleaser Features
+- **Multi-platform builds**: Linux (x86_64, ARM64), macOS (x86_64, ARM64)
+- **GitHub Releases**: Automatic release creation with changelog
+- **Archives**: Properly named tar.gz files with checksums
+- **Package formats**: DEB and RPM packages for Linux
+- **Homebrew**: Automatic formula creation (future)
+
+### Release Process
+1. **Development**: Use `./build-cli.sh` for local testing
+2. **Snapshot**: Use `./build-cli.sh release snapshot` for testing releases
+3. **Tagged Release**: Create git tag and use `./build-cli.sh release`
+4. **Distribution**: Users download from GitHub Releases
+
+### Available Downloads
+Each release provides:
+- `setup-server-cli_Linux_x86_64.tar.gz` - Linux Intel/AMD
+- `setup-server-cli_Linux_arm64.tar.gz` - Linux ARM (Raspberry Pi, etc.)
+- `setup-server-cli_Darwin_x86_64.tar.gz` - macOS Intel
+- `setup-server-cli_Darwin_arm64.tar.gz` - macOS Apple Silicon
+- `setup-server-cli_1.0.0_linux_amd64.deb` - Debian package
+- `setup-server-cli_1.0.0_linux_amd64.rpm` - RedHat package
+- `checksums.txt` - SHA256 checksums for verification
 
 ## 🎯 Use Cases
 
