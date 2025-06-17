@@ -5,6 +5,9 @@ package cmd
 import "fmt"
 
 func installDocker() {
+	fmt.Println("Removing old docker packages")
+	runCommand("for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done")
+
 	fmt.Println("Setting up Docker's apt repository")
 	commands := []string{
 		"sudo apt-get -y update",
@@ -28,4 +31,6 @@ func installDocker() {
 
 	fmt.Println("Restarting docker service")
 	runCommand("sudo systemctl restart docker")
+
+	fmt.Println("You need to log out and log back in for the changes to take effect")
 }
